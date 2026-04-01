@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+      <meta charset="UTF-8">
+      <title>ChatGPT 会話エクスポーター</title>
+    <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+                  width: 600px; 
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; 
+                  background: #f7f7f8; 
+                  color: #0d0d0d; 
+          }
+          .header { 
+                  padding: 16px; 
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                  color: white; 
+                  text-align: center; 
+                  font-weight: 600; 
+                  font-size: 14px; 
+          }
+          .content { 
+                  padding: 16px; 
+                  max-height: 700px; 
+                  overflow-y: auto; 
+          }
+          .tabs {
+                  display: flex;
+                  gap: 8px;
+                  margin-bottom: 16px;
+                  border-bottom: 2px solid #e5e5ea;
+          }
+          .tab-btn {
+                  padding: 12px 16px;
+                  background: none;
+                  border: none;
+                  border-bottom: 2px solid transparent;
+                  cursor: pointer;
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: #666;
+                  transition: all 0.3s;
+          }
+          .tab-btn.active {
+                  color: #667eea;
+                  border-bottom-color: #667eea;
+          }
+          .tab-content {
+                  display: none;
+          }
+          .tab-content.active {
+                  display: block;
+          }
+          .controls { 
+                  display: flex; 
+                  gap: 8px; 
+                  margin-bottom: 16px; 
+          }
+          button { 
+                  flex: 1; 
+                  padding: 10px 12px; 
+                  border: none; 
+                  border-radius: 6px; 
+                  font-size: 12px; 
+                  font-weight: 600; 
+                  cursor: pointer; 
+                  transition: all 0.2s;
+          }
+          .btn-primary { 
+                  background: #667eea; 
+                  color: white; 
+          }
+          .btn-primary:hover { 
+                  background: #5568d3; 
+          }
+          .btn-secondary { 
+                  background: #e5e5ea; 
+                  color: #0d0d0d; 
+          }
+          .btn-secondary:hover { 
+                  background: #d3d3d8; 
+          }
+          .btn-small {
+                  padding: 6px 10px;
+                  font-size: 11px;
+                  flex: none;
+          }
+          .status { 
+                  padding: 10px 12px; 
+                  background: #e5e5ea; 
+                  border-radius: 6px; 
+                  font-size: 12px; 
+                  margin-bottom: 12px; 
+                  text-align: center; 
+                  min-height: 20px; 
+          }
+          .data-table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 11px;
+                  margin-bottom: 12px;
+          }
+          .data-table th {
+                  background: #e5e5ea;
+                  padding: 8px;
+                  text-align: left;
+                  font-weight: 600;
+                  border: 1px solid #d5d5d6;
+          }
+          .data-table td {
+                  padding: 8px;
+                  border: 1px solid #d5d5d6;
+                  word-break: break-all;
+          }
+          .data-table tr:nth-child(even) {
+                  background: #f7f7f8;
+          }
+          .textarea-code {
+                  width: 100%;
+                  height: 300px;
+                  padding: 10px;
+                  border: 1px solid #d5d5d6;
+                  border-radius: 6px;
+                  font-family: monospace;
+                  font-size: 10px;
+                  resize: vertical;
+          }
+          .info-box {
+                  padding: 12px;
+                  background: #f0f9ff;
+                  border-left: 4px solid #667eea;
+                  border-radius: 4px;
+                  font-size: 12px;
+                  color: #333;
+                  margin-bottom: 12px;
+          }
+        </style>
+  </head>
+  <body>
+      <div class="header">ChatGPT 会話エクスポーター</div>div>
+
+      <div class="content">
+            <div class="info-box">
+                    プロジェクト名・チャット名・URL・日時をまとめてエクスポート
+            </div>div>
+
+            <div class="controls">
+                    <button class="btn-primary" id="extractBtn">📊 データ抽出</button>button>
+            </div>div>
+
+            <div class="status" id="status"></div>div>
+
+            <div class="tabs">
+                    <button class="tab-btn active" data-tab="table">テーブル表示</button>button>
+                    <button class="tab-btn" data-tab="csv">CSV</button>button>
+                    <button class="tab-btn" data-tab="json">JSON</button>button>
+            </div>div>
+
+            <div class="tab-content active" id="table-tab">
+                    <table class="data-table" id="dataTable">
+                              <thead>
+                                          <tr>
+                                                        <th>プロジェクト</th>
+                                          <th>チャットタイトル</th>
+                                          <th>URL</th>
+                                          <th>エクスポート日時</th>
+                                          </tr>
+                              </thead>
+                            <tbody id="tableBody">
+                            </tbody>tbody>
+                    </table>table>
+                  <button class="btn-secondary btn-small" id="copyTableBtn">テーブルをコピー</button>button>
+            </div>div>
+      
+          <div class="tab-content" id="csv-tab">
+                <textarea class="textarea-code" id="csvText" readonly placeholder="CSVデータがここに表示されます"></textarea>
+                <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button class="btn-secondary btn-small" id="copyCsvBtn">コピー</button>button>
+                        <button class="btn-secondary btn-small" id="downloadCsvBtn">ダウンロード</button>button>
+                </div>div>
+          </div>div>
+      
+          <div class="tab-content" id="json-tab">
+                <textarea class="textarea-code" id="jsonText" readonly placeholder="JSONデータがここに表示されます"></textarea>
+                <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button class="btn-secondary btn-small" id="copyJsonBtn">コピー</button>button>
+                        <button class="btn-secondary btn-small" id="downloadJsonBtn">ダウンロード</button>button>
+                </div>div>
+          </div>div>
+      </div>div>
+  
+    <script src="popup.js"></script>
+  </body>
+</html>html></th></th>
+                                          </tr>
+                              </thead>
+  </body>
+    </style></title>
+  </head>
