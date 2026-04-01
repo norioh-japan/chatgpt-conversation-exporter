@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "ChatGPT Conversation Exporter",
+    "version": "1.0.0",
+    "description": "ChatGPT会話をプロジェクト名・タイトル・URL付きでCSV/JSON形式でエクスポート",
+    "permissions": ["activeTab", "scripting"],
+    "action": {
+          "default_popup": "popup.html",
+          "default_title": "ChatGPT会話エクスポーター"
+    }
+}
